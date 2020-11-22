@@ -1,0 +1,9 @@
+node_modules
+.git
+.vs
+package-lock.json
+auth.json
+temp
+test.js
+test.png
+testify.js
