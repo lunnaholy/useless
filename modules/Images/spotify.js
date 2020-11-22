@@ -31,7 +31,7 @@ module.exports = {
                     const canvas = new Canvas(900, 270);
                     const cover = await resolveImage(coverUrl);
                     const color = await ColorThief.getPalette(coverUrl, 2);
-                    if(!ccc.isLevelAA(utils.rgbToHex(color[0]), utils.rgbToHex(color[1]))){
+                    if(!ccc.isLevelAAA(utils.rgbToHex(color[0]), utils.rgbToHex(color[1]))){
                         color[1] = utils.getForeground(color[0]);
                     }
                     res(canvas
@@ -51,7 +51,12 @@ module.exports = {
 
 let utils = {
     getForeground: function (rgb) {
+        let testWhite = ccc.isLevelAAA(this.rgbToHex(rgb), "#ffffff");
+        let testBlack = ccc.isLevelAAA(this.rgbToHex(rgb), "#000000");
+        if(testWhite && !testBlack) return "#ffffff";
+        if(testblack && !testWhite) return "#000000";
         luminance = this.getLuminance(rgb);
+        console.log(testWhite, testBlack, luminance);
         return (luminance < 160) ? "#ffffff" : "#000000";
     },
     getLuminance: function (rgb) {
