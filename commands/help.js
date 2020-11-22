@@ -40,11 +40,20 @@ module.exports = {
                 });
             }
             if (typeof cmd != "undefined") {
-                embed.addField(`> **${cmd.name}**`, [
-                    `**Description:** ${cmd.description}`,
-                    `**Usage:** ${prefix}${cmd.usage}`,
-                    `**Category:** ${category}`
-                ]);
+                if(!cmd.permissions){
+                    embed.addField(`> **${cmd.name}**`, [
+                        `**Description:** ${cmd.description}`,
+                        `**Usage:** ${prefix}${cmd.usage}`,
+                        `**Category:** ${category}`
+                    ]);
+                } else {
+                    embed.addField(`> **${cmd.name}**`, [
+                        `**Description:** ${cmd.description}`,
+                        `**Usage:** ${prefix}${cmd.usage}`,
+                        `**Category:** ${category}`,
+                        `**Permissions:** ${cmd.permissions.join(", ")}`
+                    ]);
+                }
             } else {
                 embed.addField(`> **${args[1]}**`, [
                     `Command ${args[1]} don't found.`

@@ -1,5 +1,10 @@
 const fs = require("fs");
-const { MessageEmbed } = require("discord.js");
+const {
+    MessageEmbed,
+    Permissions
+} = require("discord.js");
+
+const permString = JSON.parse(fs.readFileSync("./modules/Hear/permissions.json"));
 
 let cooldownStorage = {};
 
@@ -9,7 +14,7 @@ module.exports = class HearManager {
             commands,
             cache,
             unloadQuery
-        } = loadCommands();
+        } = this.loadCommands();
         this.commands = commands;
         this.cache = cache;
         this.unloadQuery = unloadQuery;
@@ -31,12 +36,30 @@ module.exports = class HearManager {
             commands,
             cache,
             unloadQuery
-        } = loadCommands();
+        } = this.loadCommands();
         this.commands = commands;
         this.cache = cache;
         this.unloadQuery = unloadQuery;
 
         console.log(`Reload successful! Now ${this.count()} commands loaded`)
+    }
+
+    checkForPermissions(member, permissions) {
+        if (member != null) {
+            return member.hasPermission(permissions);
+        }
+    }
+
+    getPermissionString(permission) {
+        if (typeof permission.forEach == "function") {
+            let perms = [];
+            permission.forEach(flag => {
+                perms.push(permString[permission]);
+            });
+            return perms;
+        } else {
+            return [permString[permission]];
+        }
     }
 
     reloadModules() {
@@ -80,6 +103,11 @@ module.exports = class HearManager {
                         return msg.channel.send("Not so fast!");
                     }
                 }
+                if (cmd.permissions) {
+                    if (!this.checkForPermissions(msg.member, cmd.permissions)) {
+                        return msg.channel.send("Insufficient permissions.");
+                    }
+                }
                 let args = [];
                 if (cmd.regexp) {
                     args = hear.match(cmd.regexp) || [];
@@ -88,11 +116,11 @@ module.exports = class HearManager {
                     return cmd.callback(msg, args, this);
                 } catch (e) {
                     const embed = new MessageEmbed()
-                    .setColor("RED")
-                    .setTitle("Critical Error!")
-                    .addField("**Execution error:**", [
-                        '```' + e + '```'
-                    ]);
+                        .setColor("RED")
+                        .setTitle("Critical Error!")
+                        .addField("**Execution error:**", [
+                            '```' + e + '```'
+                        ]);
 
                     return msg.channel.send(embed);
                 }
@@ -101,7 +129,7 @@ module.exports = class HearManager {
     }
 
     getPrefixForGuild(guildId) {
-        if (guildId.guild === null){
+        if (guildId.guild === null) {
             return "";
         }
         guildId = guildId.guild.id;
@@ -115,6 +143,63 @@ module.exports = class HearManager {
         } else {
             return "u!";
         }
+    }
+
+    loadCommands() {
+        let commands = [];
+        let cache = {};
+        let unloadQuery = [];
+        cache["Uncategorized"] = [];
+        fs.readdirSync("./commands").map(e1 => {
+            if (e1.endsWith(".js")) {
+                let cmd = require("../../commands/" + e1);
+                if (cmd.enabled) {
+                    commands.push(cmd);
+                    if (cmd.dontShowInHelp) return;
+                    let cached = {
+                        name: cmd.trigger,
+                        description: cmd.description || "No description provided",
+                        usage: cmd.example
+                    };
+                    if(cmd.permissions) {
+                        cached.permissions = this.getPermissionString(cmd.permissions);
+                    }
+                    cache["Uncategorized"].push(cached);
+                    unloadQuery.push("../../commands/" + e1);
+                    return;
+                }
+            } else {
+                const dirStat = fs.lstatSync("./commands/" + e1);
+                if (dirStat.isDirectory()) {
+                    if (!fs.existsSync("./commands/" + e1 + "/secret")) cache[e1] = [];
+                    fs.readdirSync("./commands/" + e1).map(e2 => {
+                        if (e2.endsWith(".js")) {
+                            let cmd = require("../../commands/" + e1 + "/" + e2);
+                            if (cmd.enabled) {
+                                commands.push(cmd);
+                                if (cmd.dontShowInHelp || fs.existsSync("./commands/" + e1 + "/secret")) return;
+                                let cached = {
+                                    name: cmd.trigger,
+                                    description: cmd.description || "No description provided",
+                                    usage: cmd.example
+                                };
+                                if(cmd.permissions) {
+                                    cached.permissions = this.getPermissionString(cmd.permissions);
+                                }
+                                cache[e1].push(cached);
+                                unloadQuery.push("../../commands/" + e1 + "/" + e2);
+                                return;
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        return {
+            commands,
+            cache,
+            unloadQuery
+        };
     }
 }
 
@@ -138,55 +223,4 @@ function checkForCooldown(msg, trigger, cooldown) {
         cooldownStorage[msg.author.id][trigger] = Date.now();
         return false;
     }
-}
-
-function loadCommands() {
-    let commands = [];
-    let cache = {};
-    let unloadQuery = [];
-    cache["Uncategorized"] = [];
-    fs.readdirSync("./commands").map(e1 => {
-        if (e1.endsWith(".js")) {
-            let cmd = require("../../commands/" + e1);
-            if (cmd.enabled) {
-                commands.push(cmd);
-                if (cmd.dontShowInHelp) return;
-                let cached = {
-                    name: cmd.trigger,
-                    description: cmd.description || "No description provided",
-                    usage: cmd.example
-                };
-                cache["Uncategorized"].push(cached);
-                unloadQuery.push("../../commands/" + e1);
-                return;
-            }
-        } else {
-            const dirStat = fs.lstatSync("./commands/" + e1);
-            if (dirStat.isDirectory()) {
-                if (!fs.existsSync("./commands/" + e1 + "/secret")) cache[e1] = [];
-                fs.readdirSync("./commands/" + e1).map(e2 => {
-                    if (e2.endsWith(".js")) {
-                        let cmd = require("../../commands/" + e1 + "/" + e2);
-                        if (cmd.enabled) {
-                            commands.push(cmd);
-                            if (cmd.dontShowInHelp || fs.existsSync("./commands/" + e1 + "/secret")) return;
-                            let cached = {
-                                name: cmd.trigger,
-                                description: cmd.description || "No description provided",
-                                usage: cmd.example
-                            };
-                            cache[e1].push(cached);
-                            unloadQuery.push("../../commands/" + e1 + "/" + e2);
-                            return;
-                        }
-                    }
-                });
-            }
-        }
-    });
-    return {
-        commands,
-        cache,
-        unloadQuery
-    };
 }
