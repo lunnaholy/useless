@@ -1,3 +1,4 @@
+const { Permissions } = require("discord.js");
 const fs = require("fs");
 
 module.exports = {
@@ -6,6 +7,7 @@ module.exports = {
     regexp: 'prefix (.*)',
     description: 'Overrides the global prefix for your guild.',
     example: 'prefix u!',
+    permissions: [Permissions.FLAGS.MANAGE_GUILD],
     callback: async (message, args, hear) => {
         if(message.member.hasPermission("ADMINISTRATOR")){
             if(args.length < 2){
