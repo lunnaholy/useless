@@ -6,7 +6,7 @@ let hear = new HearManager();
 
 const client = new Discord.Client();
 
-client.login(JSON.parse(fs.readFileSync("./auth.json")).test);
+client.login(JSON.parse(fs.readFileSync("./auth.json")).token);
 
 client.once('ready', () => {
     console.log(`Now listening ${client.guilds.cache.size} servers`)
