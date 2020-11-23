@@ -26,7 +26,7 @@ module.exports = {
                 if (localmd.length > 0) {
                     embed.addField(`> **${cat}**`, [
                         `${localmd.join(", ")}`
-                    ], true);
+                    ]);
                 }
             }
         } else if (args.length == 2) {
@@ -60,6 +60,7 @@ module.exports = {
                 ]);
             }
         }
+        //message.channel.send('I sent you help on commands in DM.');
         return message.channel.send(embed);
     }
 }

@@ -2,7 +2,7 @@ module.exports = {
     enabled: true,
     trigger: "invite",
     description: 'Gives you my invite link for an invitation to the Guild.',
-    regexp: 'invite',
+    usage: 'invite',
     dontShowInHelp: false,
     callback: (message) => {
         const clientId = message.client.user.id;

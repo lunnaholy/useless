@@ -44,9 +44,9 @@ module.exports = class HearManager {
         console.log(`Reload successful! Now ${this.count()} commands loaded`)
     }
 
-    checkForPermissions(member, permissions) {
+    checkForPermissions(member, channel, permissions) {
         if (member != null) {
-            return member.hasPermission(permissions);
+            return channel.permissionsFor(member).has(permissions);
         }
     }
 
@@ -83,10 +83,15 @@ module.exports = class HearManager {
         });
     }
 
+    checkForGuild(msg) {
+        return (typeof msg.guild == "object")
+    }
+
     hear(msg) {
         let hear = msg.content || "";
         if (hear.startsWith(this.getPrefixForGuild(msg))) {
             hear = hear.replace(this.getPrefixForGuild(msg), "");
+            if(this.checkForGuild(msg) && !this.checkForPermissions(msg.guild.me, msg.channel, [Permissions.FLAGS.SEND_MESSAGES])) return msg.author.send("I do not have permission to send messages to this channel.");
             let cmd = this.commands.find((e) => {
                 let regexp;
                 if (e.regexp) {
@@ -103,9 +108,15 @@ module.exports = class HearManager {
                         return msg.channel.send("Not so fast!");
                     }
                 }
+                if (cmd.onlyGuild && !this.checkForGuild(msg)){
+                    return msg.channel.send("This command can only be executed in the Guild.");
+                }
                 if (cmd.permissions) {
-                    if (!this.checkForPermissions(msg.member, cmd.permissions)) {
+                    if (!this.checkForPermissions(msg.member, msg.channel, cmd.permissions)) {
                         return msg.channel.send("Insufficient permissions.");
+                    }
+                    if (!this.checkForPermissions(msg.guild.me, msg.channel, cmd.permissions)) {
+                        return msg.channel.send("I do not have the following rights to execute the given command: " + this.getPermissionString(cmd.permissions.join(", ")));
                     }
                 }
                 let args = [];
@@ -130,7 +141,7 @@ module.exports = class HearManager {
 
     getPrefixForGuild(guildId) {
         if (guildId.guild === null) {
-            return "";
+            return "u!";
         }
         guildId = guildId.guild.id;
         if (fs.existsSync("./temp/prefixes.json")) {

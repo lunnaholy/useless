@@ -8,6 +8,7 @@ module.exports = {
     dontShowInHelp: false,
     regexp: "clear ([0-9]+)",
     example: "clear",
+    guildOnly: true,
     callback: (message, args) => {
         const amount = args[1];
         if(isNaN(amount)) return message.channel.send(args[1] + " is not a number!");
