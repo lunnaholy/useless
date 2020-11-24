@@ -5,7 +5,7 @@ module.exports = {
     trigger: "mojangstatus",
     description: 'Obtaining API Mojang status.',
     example: 'mojangstatus',
-    dontShowInHelp: true,
+    dontShowInHelp: false,
     callback: (message) => {
         mojang.status()
             .then(status => {
