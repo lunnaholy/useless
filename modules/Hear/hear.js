@@ -140,7 +140,7 @@ module.exports = class HearManager {
     }
 
     getPrefixForGuild(guildId) {
-        if (guildId.guild === null) {
+        if (guildId.guild == null) {
             return "u!";
         }
         guildId = guildId.guild.id;
