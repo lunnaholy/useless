@@ -84,14 +84,15 @@ module.exports = class HearManager {
     }
 
     checkForGuild(msg) {
-        return (typeof msg.guild == "object")
+        return !(msg.guild == null)
     }
 
     hear(msg) {
         let hear = msg.content || "";
         if (hear.startsWith(this.getPrefixForGuild(msg))) {
             hear = hear.replace(this.getPrefixForGuild(msg), "");
-            if(this.checkForGuild(msg) && !this.checkForPermissions(msg.guild.me, msg.channel, [Permissions.FLAGS.SEND_MESSAGES])) return msg.author.send("I do not have permission to send messages to this channel.");
+            if(this.checkForGuild(msg))
+                if(!this.checkForPermissions(msg.guild.me, msg.channel, [Permissions.FLAGS.SEND_MESSAGES])) return msg.author.send("I do not have permission to send messages to this channel.");
             let cmd = this.commands.find((e) => {
                 let regexp;
                 if (e.regexp) {
@@ -108,7 +109,7 @@ module.exports = class HearManager {
                         return msg.channel.send("Not so fast!");
                     }
                 }
-                if (cmd.onlyGuild && !this.checkForGuild(msg)){
+                if (cmd.guildOnly && !this.checkForGuild(msg)){
                     return msg.channel.send("This command can only be executed in the Guild.");
                 }
                 if (cmd.permissions) {
