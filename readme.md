@@ -2,9 +2,9 @@
   <a href="https://github.com/discordjs">
     <img src="https://img.shields.io/badge/discord.js-v12.5.0-blue.svg?logo=npm" alt="shield.png">
   </a>
-  [![Discord Bots](https://top.gg/api/widget/status/777630090401021964.svg)](https://top.gg/bot/777630090401021964)
-  [![Discord Bots](https://top.gg/api/widget/upvotes/777630090401021964.svg)](https://top.gg/bot/777630090401021964)
-  [![Discord Bots](https://top.gg/api/widget/owner/777630090401021964.svg)](https://top.gg/bot/777630090401021964)
+  <img src="https://top.gg/api/widget/status/777630090401021964.svg" alt="shield.png">
+  <img src="https://top.gg/api/widget/upvotes/777630090401021964.svg" alt="shield.png">
+  <img src="https://top.gg/api/widget/owner/777630090401021964.svg" alt="shield.png">
   <h3>Useless</h3>
   the most useless bot in the world
 </div>
