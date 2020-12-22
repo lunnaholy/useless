@@ -89,6 +89,9 @@ module.exports = class HearManager {
 
     hear(msg) {
         let hear = msg.content || "";
+        if(msg.mentions.users.has(msg.client.user.id)){
+            return msg.channel.send("Hi there! Help: " + this.getPrefixForGuild(msg) + "help");
+        }
         if (hear.startsWith(this.getPrefixForGuild(msg))) {
             hear = hear.replace(this.getPrefixForGuild(msg), "");
             if(this.checkForGuild(msg))
