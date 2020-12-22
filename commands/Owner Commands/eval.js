@@ -26,7 +26,7 @@ module.exports = {
                         '```js\n' + args[1] + '```'
                     ])
                     .addField("**Execution result:**", [
-                        '```' + res + '```'
+                        '```json\n' + res + '```'
                     ])
                 return message.channel.send(embed);
             })
@@ -38,7 +38,7 @@ module.exports = {
                         '```js\n' + args[1] + '```'
                     ])
                     .addField("**Execution error:**", [
-                        '```' + e + '```'
+                        '```json\n' + e + '```'
                     ])
                 return message.channel.send(embed);
             });
