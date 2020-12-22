@@ -5,7 +5,7 @@ module.exports = {
     trigger: "8ball",
     description: 'Crystal Ball.',
     example: '8ball Will I eat three hamburgers?',
-    dontShowInHelp: true,
+    dontShowInHelp: false,
     regexp: '8ball (.*)',
     callback: (message, args) => {
         const embed = new MessageEmbed()
