@@ -1,3 +1,6 @@
+const {
+    MessageEmbed
+} = require("discord.js");
 const mojang = require("mojang");
 
 module.exports = {
@@ -9,9 +12,12 @@ module.exports = {
     callback: (message) => {
         mojang.status()
             .then(status => {
-                let table = "";
+                let table = new MessageEmbed()
+                    .setTitle("Mojang Services Status")
+                    .setColor("GREEN");
                 status.forEach(status => {
-                    table += (`\nNode: \`${status.hostname}\` | Status: ${getSmileByColor(status.color)} | Is Available: ${getSmileByColor(status.isAvailable)} | Has Issues: ${getSmileByColor(status.hasIssues)}`);
+                    /*table += (`\nNode: \`${status.hostname}\` | Status: ${getSmileByColor(status.color)} | Is Available: ${getSmileByColor(status.isAvailable)} | Has Issues: ${getSmileByColor(status.hasIssues)}`);*/
+                    table.addField(status.hostname, `Status: ${getSmileByColor(status.color)}\nIs Available: ${getSmileByColor(status.isAvailable)}\nHas Issues: ${getSmileByColor(status.hasIssues)}`, true);
                 });
                 return message.channel.send(table);
             })
