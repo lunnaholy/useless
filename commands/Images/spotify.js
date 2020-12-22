@@ -3,20 +3,22 @@ const Spotify = require("../../modules/Images/spotify");
 module.exports = {
     enabled: true,
     trigger: "spotify",
-    description: "Generates a pretty-sexy with your current Spotify track.",
+    description: "Generates a pretty-sexy card with your current Spotify track.",
     dontShowInHelp: false,
     example: "spotify",
+    regexp: "spotify( )?(<@[!-*][a-z0-9]+>)?",
     callback: (message) => {
-        if(message.author.presence.activities.length > 0){
+        const member = message.mentions.members.first() || message.author;
+        if(member.presence.activities.length > 0){
             let spotify;
-            message.author.presence.activities.forEach(activity => {
+            member.presence.activities.forEach(activity => {
                 if(activity.name == "Spotify"){
                     spotify = activity;
                 }
             });
 
             if(!spotify){
-                return message.author.send("Can't find Spotify Presence. Check your Spotify integration.");
+                return message.channel.send("Can't find Spotify Presence. Check your Spotify integration.");
             }
 
             message.reply("please wait a bit").then(msg => {
@@ -27,7 +29,7 @@ module.exports = {
                     });
             });
         } else {
-            return message.author.send("Can't find Spotify Presence. Check your Spotify integration.");
+            return message.channel.send("Can't find Spotify Presence. Check your Spotify integration.");
         }
     }
 }
