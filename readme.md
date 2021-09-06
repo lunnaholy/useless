@@ -9,6 +9,9 @@
   the most useless bot in the world
 </div>
 
+# IMPORTANT
+Not Supported: This codebase is now only relevant for the old version of Discord.js. For new versions, stay on line, I will release a new codebase soon.
+
 ### Features
 - Own message manager (Hear)
 - Flexible command setting
